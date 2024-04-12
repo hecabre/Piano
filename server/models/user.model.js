@@ -6,15 +6,16 @@ export async function createUser(username, second_name, age, password, email) {
   try {
     await connection.beginTransaction();
     const [result] = await connection.execute(
-      "INSERT INTO users (username, email, password_hash, age, second_name) VALUES (?, ?, ?, ?, ?)",
-      [username, email, password, age, second_name]
+      "INSERT INTO users (username, second_name, age, password_hash, email) VALUES (?, ?, ?, ?, ?)",
+      [username, second_name, age, password, email]
     );
-    console.log("Nuevo usuario insertado en la base de datos");
     console.log(result);
     await connection.commit();
+    return true;
   } catch (e) {
     await connection.rollback();
     console.log("Error al registrar el usuario:", e.message);
+    return null;
   } finally {
     await connection.end();
   }
@@ -34,10 +35,7 @@ export async function selectUser(email, password) {
         password,
         user.password_hash
       );
-
-      if (isPasswordValid) {
-        return user;
-      }
+      if (isPasswordValid) return user;
     }
   } catch (e) {
     console.error("Error al seleccionar el usuario:", e.message);
@@ -47,4 +45,20 @@ export async function selectUser(email, password) {
   }
 
   return null;
+}
+
+export async function selectUserByEmail(email) {
+  const connection = await connectDB();
+  try {
+    const user = await connection.execute(
+      "SELECT email FROM users WHERE email = ?",
+      [email]
+    );
+    return user;
+  } catch (error) {
+    console.error("Error selecting user by email:", error);
+    return null;
+  } finally {
+    await connection.close();
+  }
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AiOutlineClose, AiOutlineBars } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export const Sidebar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -10,20 +11,37 @@ export const Sidebar = () => {
   };
 
   return (
-    <nav className="fixed top-0 w-full shadow-lg flex justify-between lg:justify-around md:justify-around items-center z-20 text-white py-5 px-3 font-nunito">
-      <div className="cursor-pointer" onClick={() => navigate("/")}>
-        logo
-      </div>
+    <nav className="fixed top-0 w-full shadow-lg flex justify-between lg:justify-around md:justify-around items-center z-10 text-white py-5 px-3 font-nunito text-black-0 bg-gradient-to-br from-skyBlue-400  to-skyBlue-600">
+      <img
+        className="cursor-pointer w-12 h-12"
+        onClick={() => navigate("/")}
+        src="../../public/img/logo.png"
+      />
       <ul className="flex justify-around gap-0 md:gap-20">
-        <li className="hidden md:block lg:block text-lg text-white font-semi text-black-700">
+        <Link
+          className="hidden md:block lg:block text-lg text-white font-semi text-black-0"
+          to={"/game"}
+        >
           Materias
-        </li>
-        <li className="hidden md:block lg:block text-lg text-white font-semi text-black-700">
+        </Link>
+        <Link
+          className="hidden md:block lg:block text-lg text-white font-semi text-black-0"
+          to={"/subject/1"}
+        >
           Problemas
-        </li>
-        <li className="hidden md:block lg:block text-lg text-white font-semi text-black-700">
-          Respuestas
-        </li>
+        </Link>
+        <Link
+          className="hidden md:block lg:block text-lg text-white font-semi text-black-0"
+          to={"/login/tutor"}
+        >
+          Padres
+        </Link>
+        <Link
+          className="hidden md:block lg:block text-lg text-white font-semi text-black-0"
+          to={"/register/child"}
+        >
+          Vincular Hijo
+        </Link>
       </ul>
 
       <div className="flex items-center justify-center gap-5" id="sidebar">
@@ -40,15 +58,14 @@ export const Sidebar = () => {
         )}
 
         <p
-          className="text-md bg-gradient-to-r from-black-600 to-black-800 text-black-0 px-7 py-2 rounded-full opacity-80 cursor-pointer hidden md:block lg:block font-nunito"
-          onClick={() => navigate("/register")}
+          className="text-md bg-skyBlue-700 text-black-0 px-7 py-2 rounded-full cursor-pointer hidden md:block lg:block font-nunito"
+          onClick={() => navigate("/login")}
         >
-          Registrar
+          Iniciar Sesion
         </p>
       </div>
-
       <div
-        className={`fixed top-0 right-0 h-full shadow-lg backdrop-blur-lg  w-64 p-4 transition-transform duration-300  ease-in-out transform ${
+        className={`fixed top-0 right-0 h-full shadow-lg backdrop-blur-lg bg-gradient-to-br from-skyBlue-400 to-skyBlue-700 w-64 p-4 transition-transform duration-300 ease-in-out transform ${
           sidebarOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -61,15 +78,21 @@ export const Sidebar = () => {
           </div>
         )}
 
-        <ul className="text-white">
-          <li className="py-2 font-nunito">Materias</li>
-          <li className="py-2 font-nunito">Ejercicios</li>
-          <li className="py-2 font-nunito">Respuestas</li>
+        <ul className="text-white flex flex-col">
+          <Link className="py-2 font-nunito" to={"/game"}>
+            Materias
+          </Link>
+          <Link className="py-2 font-nunito" to={"/subject/1"}>
+            Ejercicios
+          </Link>
+          <Link className="py-2 font-nunito" to={"/register/tutor"}>
+            Padres
+          </Link>
           <li
             className="py-2 font-nunito"
             onClick={() => navigate("/register")}
           >
-            Registrar
+            Iniciar Sesion
           </li>
         </ul>
       </div>

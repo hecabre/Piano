@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form";
-import { toast } from "react-hot-toast";
 import {
   AiOutlineUserAdd,
   AiFillEye,
@@ -7,121 +6,194 @@ import {
 } from "react-icons/ai";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { useState } from "react";
+import { IoCalendarNumber } from "react-icons/io5";
+import { IoMdHappy } from "react-icons/io";
+import { Link } from "react-router-dom";
+import { FaPersonBreastfeeding } from "react-icons/fa6";
+import { MdOutlineEmail } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { useEffect } from "react";
 
 export const RegisterForm = () => {
+  const navigate = useNavigate();
   const [seePassword, setSeePassword] = useState(false);
-
+  const { signup, userData } = useAuth();
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm();
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
+
+  const onSubmit = handleSubmit(async (values) => {
+    await signup(values);
   });
-  console.log(errors);
+  
+  useEffect(() => {
+    if (userData && userData.message) {
+      navigate("/login");
+    }
+  }, [userData, navigate]);
+
   return (
-    <form
-      onSubmit={onSubmit}
-      className="flex flex-col gap-2 relative top-24 w-1/2 mx-auto items-center justify-center rounded-lg py-2 px-3  shadow-2xl backdrop-blur-lg"
-    >
-      <h2 className="font-nunito font-bold  text-2xl">Crear cuenta</h2>
-      <p className="hidden">
-        {errors.email?.type === "required" && (
-          <>{toast.error(errors.email.message)}</>
-        )}
-        {errors.password?.type === "required" ? (
-          <>{toast.error(errors.password.message)}</>
-        ) : (
-          errors.confirmPassword?.type === "required" && (
-            <>{toast.error(errors.confirmPassword.message)}</>
-          )
-        )}
-      </p>
-      <label htmlFor="email" className="">
-        Email
-      </label>
-      <div className="flex px-2 py-1 items-center border border-black-400 rounded-lg gap-1">
-        <AiOutlineUserAdd className="text-lg" />
-        <input
-          type="email"
-          name="email"
-          className="focus:outline-none"
-          {...register("email", {
-            required: {
-              value: true,
-              message: "Correo es requerido",
-            },
-            pattern: {
-              value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
-              message: "Correo no válido",
-            },
-          })}
-        />
-      </div>
-      <label htmlFor="password">Contraseña</label>
-      <section className="border border-black-400 flex items-center gap-1 px-2 py-1 rounded-lg justify-between">
-        <div className="flex items-center gap-1">
-          <RiLockPasswordFill />
-          <input
-            className="focus:outline-none"
-            name="password"
-            type={seePassword ? "text" : "password"}
-            {...register("password", {
-              required: {
-                value: true,
-                message: "Contraseña es requerida",
-              },
-            })}
-          />
+    <div className="min-h-screen mt-16 flex items-center justify-center ">
+      <form
+        onSubmit={onSubmit}
+        className="max-w-md w-full p-6 bg-white rounded-lg shadow-2xl"
+      >
+        <div className="items-center flex justify-center">
+          <IoMdHappy className="text-center text-4xl md:text-5xl lg:text-6xl text-skyBlue-500" />
         </div>
-        <div>
-          {seePassword ? (
-            <AiFillEyeInvisible
-              className="cursor-pointer"
-              onClick={() => setSeePassword(!seePassword)}
-            />
-          ) : (
-            <AiFillEye
-              className="cursor-pointer"
-              onClick={() => setSeePassword(!seePassword)}
-            />
+        <h2 className="text-3xl font-semibold text-center text-gray-600 mb-1">
+          Crear cuenta
+        </h2>
+        <div className="mb-4">
+          <p className="text-center text-red-500">{userData?.error}</p>
+          {errors.email?.type === "required" && (
+            <p className="text-red-500 text-center">{errors.email.message}</p>
+          )}
+          {(errors.password?.type === "required" ||
+            errors.confirmPassword?.type === "required") && (
+            <p className="text-red-500 text-center">
+              {errors.password?.message || errors.confirmPassword?.message}
+            </p>
+          )}
+          {errors.apellido?.type === "required" && (
+            <p className="text-red-500 text-center">
+              {errors.apellido.message}
+            </p>
+          )}
+          {errors.edad?.type === "required" && (
+            <p className="text-red-500 text-center">{errors.edad.message}</p>
+          )}{" "}
+          {errors.nombre?.type === "required" && (
+            <p className="text-red-500 text-center">{errors.nombre.message}</p>
           )}
         </div>
-      </section>
-      <label htmlFor="confirmPassword">Confirmar contraseña</label>
-      <div className="border border-black-400 flex items-center gap-1 px-2 py-1 rounded-lg justify-between">
-        <div className="flex items-center gap-1">
-          <RiLockPasswordFill />
-          <input
-            className="focus:outline-none"
-            name="confirmPassword"
-            type={seePassword ? "text" : "password"}
-            {...register("confirmPassword", {
-              required: {
-                value: true,
-                message: "Contraseña es requerida",
-              },
-            })}
-          />
-        </div>
-        <div>
-          {seePassword ? (
-            <AiFillEyeInvisible
-              className="cursor-pointer"
-              onClick={() => setSeePassword(!seePassword)}
+
+        <div className="mb-4">
+          <label htmlFor="email" className="sr-only">
+            Email
+          </label>
+          <div className="flex items-center border border-gray-300 rounded-lg p-2">
+            <MdOutlineEmail className="text-lg text-gray-600" />
+            <input
+              type="email"
+              name="email"
+              placeholder="Correo electrónico"
+              className="focus:outline-none flex-1 ml-2"
+              {...register("email", {
+                required: "Correo es requerido",
+                pattern: {
+                  value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                  message: "Correo no válido",
+                },
+              })}
             />
-          ) : (
-            <AiFillEye
-              className="cursor-pointer"
-              onClick={() => setSeePassword(!seePassword)}
-            />
-          )}
+          </div>
         </div>
-      </div>
-      <button className="w-1/3 h-1/4 py-2 rounded-ful bg-gradient-to-r from-black-500 to-black-600 rounded-full text-black-0 font-nunito font-light">
-        Crear cuenta
-      </button>
-    </form>
+        <div className="mb-4">
+          <label htmlFor="username" className="sr-only">
+            Nombre
+          </label>
+          <div className="flex items-center border border-gray-300 rounded-lg p-2">
+            <AiOutlineUserAdd className="text-lg text-gray-600" />
+            <input
+              type="text"
+              name="username"
+              placeholder="Nombre"
+              className="focus:outline-none flex-1 ml-2"
+              {...register("username", {
+                required: "Nombre es requerido",
+              })}
+            />
+          </div>
+        </div>
+        <div className="mb-4">
+          <label htmlFor="second_name" className="sr-only">
+            Apellido
+          </label>
+          <div className="flex items-center border border-gray-300 rounded-lg p-2">
+            <AiOutlineUserAdd className="text-lg text-gray-600" />
+            <input
+              type="text"
+              name="second_name"
+              placeholder="Apellido"
+              className="focus:outline-none flex-1 ml-2"
+              {...register("second_name", {
+                required: "Apellido es requerido",
+              })}
+            />
+          </div>
+        </div>
+        <div className="mb-6">
+          <label htmlFor="age" className="sr-only">
+            Edad
+          </label>
+          <div className="flex items-center border border-gray-300 rounded-lg p-2">
+            <IoCalendarNumber className="text-lg text-gray-600" />
+            <input
+              type="number"
+              name="age"
+              placeholder="Edad"
+              className="focus:outline-none flex-1 ml-2 appearance-none"
+              {...register("age", {
+                required: "Edad es requerida",
+              })}
+            />
+          </div>
+        </div>
+        <div className="mb-4">
+          <label htmlFor="password" className="sr-only">
+            Contraseña
+          </label>
+          <div className="flex items-center border border-gray-300 rounded-lg p-2">
+            <RiLockPasswordFill className="text-gray-600" />
+            <input
+              className="focus:outline-none flex-1 ml-2"
+              name="password"
+              type={seePassword ? "text" : "password"}
+              placeholder="Contraseña"
+              {...register("password", {
+                required: "Contraseña es requerida",
+              })}
+            />
+            <div>
+              {seePassword ? (
+                <AiFillEyeInvisible
+                  className="cursor-pointer text-gray-600"
+                  onClick={() => setSeePassword(!seePassword)}
+                />
+              ) : (
+                <AiFillEye
+                  className="cursor-pointer text-gray-600"
+                  onClick={() => setSeePassword(!seePassword)}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-4 text-sm text-center gap-2 flex items-center justify-center">
+          <Link
+            to={"/register/tutor"}
+            className="flex items-center justify-center gap-2"
+          >
+            <FaPersonBreastfeeding className="text-skyBlue-500 font-bold cursor-pointer text-lg" />
+            <p className="text-gray-600">
+              Si eres{" "}
+              <span className="text-skyBlue-500 font-bold cursor-pointer">
+                {" "}
+                tutor registrate
+              </span>{" "}
+              aqui!
+            </p>
+          </Link>
+        </div>
+        <button className="w-full py-2 rounded-full bg-gradient-to-r from-skyBlue-400 to-skyBlue-600 text-white">
+          Crear cuenta
+        </button>
+      </form>
+    </div>
   );
 };
